@@ -4,20 +4,28 @@ import ytdl from 'ytdl-core';
 
 const downloadYoutubeRobot = {
 	run: async function (data) {
-		const videosDir = path.join(__dirname, '..', '..', 'public', 'videos');
-		const videoFile = path.join(videosDir, 'video.mp4');
+		if (data.pickedResult) {
+			const { videoTitle, videoLink } = data.pickedResult;
+			const videosDir = path.join(__dirname, '..', '..', 'public', 'videos');
+			const videoFile = path.join(videosDir, `${videoTitle}.mp4`);
 
-		if (!fs.existsSync(videosDir)) {
-			fs.mkdirSync(videosDir, { recursive: true });
+			if (!fs.existsSync(videosDir)) {
+				fs.mkdirSync(videosDir, { recursive: true });
+			}
+
+			await new Promise((resolve) => {
+				const youtubeLink = `https://www.youtube.com${videoLink}`;
+
+				ytdl(youtubeLink).pipe(
+					fs.createWriteStream(videoFile).on('finish', () => {
+						data.videoFilePath = videoFile;
+						resolve(data);
+					})
+				);
+			});
+		} else {
+			console.log(`There's no result to download!`);
 		}
-
-		await new Promise((resolve) => {
-			ytdl('https://www.youtube.com/watch?v=TAqZb52sgpU').pipe(
-				fs.createWriteStream(videoFile).on('finish', () => {
-					data.videoFilePath = videoFile;
-				})
-			);
-		});
 	},
 };
 

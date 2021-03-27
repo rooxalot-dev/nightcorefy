@@ -1,30 +1,37 @@
 import robots from './src/robots';
+import stateManager from './src/utils/stateManager';
 
-async function orchestrate({ appName }) {
-	const data = {};
+async function orchestrate({ appName, clearState }) {
+	let data = {};
 
-	const nightcorefyRobots = [
-		// robots.inputRobot,
-		// robots.youtubeSongRobot,
-		// robots.metadataRobot,
+	const appRobots = [
+		robots.inputRobot,
+		robots.youtubeSongRobot,
+		robots.metadataRobot,
+		robots.resultPickerRobot,
 		robots.downloadYoutubeRobot,
 	];
 
 	try {
 		console.log(`Welcome to ${appName}!`);
 
-		for (let index = 0; index < nightcorefyRobots.length; index++) {
-			const robot = nightcorefyRobots[index];
-			await robot.run(data);
-		}
+		for (let index = 0; index < appRobots.length; index++) {
+			data = stateManager.load();
 
-		console.log('Processed data: ', data);
+			const robot = appRobots[index];
+			await robot.run(data);
+
+			stateManager.save(data);
+		}
 		console.log('Finished!');
 	} catch (error) {
 		console.log('Error: ', error);
 	} finally {
-		//process.exit();
+		if (clearState) {
+			stateManager.clear();
+		}
+		process.exit();
 	}
 }
 
-orchestrate({ appName: 'NIGHTCOREFY' });
+orchestrate({ appName: 'YouTwoBe' });
