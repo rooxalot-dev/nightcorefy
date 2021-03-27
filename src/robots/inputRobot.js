@@ -1,4 +1,4 @@
-import { question, keyInYN } from 'readline-sync';
+import { question, keyInSelect, keyInYN } from 'readline-sync';
 
 const inputRobot = {
 	getSongInput: async function (data) {
@@ -9,12 +9,27 @@ const inputRobot = {
 			data.bandName = question('Tell me the band name: ');
 		}
 	},
+	getFormatInput: async function (data) {
+		const formats = ['Audio', 'Video'];
+		const songFormatIndex = keyInSelect(
+			formats,
+			'Which format you want to download the music?',
+			{ defaultInput: 'Video' }
+		);
+
+		if (songFormatIndex >= 0) {
+			data.songFormat = formats[songFormatIndex];
+		} else {
+			data.songFormat = 'Video';
+		}
+	},
 
 	run: async function (data) {
 		await this.getSongInput(data);
 		await this.getBandInput(data);
+		await this.getFormatInput(data);
 
-		const { songName, bandName } = data;
+		const { songName, bandName, songFormat } = data;
 		let returnMessage = '';
 
 		if (!!songName || !!bandName) {
@@ -25,6 +40,8 @@ const inputRobot = {
 				data.searchTerm += ` ${bandName}`;
 				returnMessage += ` from the band ${bandName}`;
 			}
+
+			returnMessage += ` in the ${songFormat} format`;
 
 			console.log(returnMessage);
 		}

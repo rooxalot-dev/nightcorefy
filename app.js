@@ -34,4 +34,4 @@ async function orchestrate({ appName, clearState }) {
 	}
 }
 
-orchestrate({ appName: 'YouTwoBe' });
+orchestrate({ appName: 'YouTwoBe', clearState: true });
