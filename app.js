@@ -1,5 +1,6 @@
 import robots from './src/robots';
 import stateManager from './src/utils/stateManager';
+import pathUtils from './src/utils/pathsUtils';
 
 async function orchestrate({ appName, clearState }) {
 	let data = {};
