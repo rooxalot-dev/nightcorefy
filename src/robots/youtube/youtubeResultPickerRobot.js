@@ -1,6 +1,6 @@
 import { keyInYNStrict, keyInSelect } from 'readline-sync';
 
-const resultPickerRobot = {
+const youtubeResultPickerRobot = {
 	ordernateResults: async function (data) {
 		if (keyInYNStrict('Do you want to order the results by views?')) {
 			data.searchResults.sort(
@@ -27,4 +27,4 @@ const resultPickerRobot = {
 	},
 };
 
-export default resultPickerRobot;
+export default youtubeResultPickerRobot;

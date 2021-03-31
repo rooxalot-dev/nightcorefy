@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
 
-const youtubeSongRobot = {
+const youtubeSongSearchRobots = {
 	getWebPage: async function () {
 		const browser = await puppeteer.launch();
 
@@ -59,4 +59,4 @@ const youtubeSongRobot = {
 	},
 };
 
-export default youtubeSongRobot;
+export default youtubeSongSearchRobots;

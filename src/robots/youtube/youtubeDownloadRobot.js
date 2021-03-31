@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import ytdl from 'ytdl-core';
 
-const downloadYoutubeRobot = {
+const youtubeDownloadRobot = {
 	run: async function (data) {
 		if (data.pickedResult) {
 			const { videoTitle, videoLink } = data.pickedResult;
@@ -10,12 +10,13 @@ const downloadYoutubeRobot = {
 
 			const format = songFormat === 'Video' ? '.mp4' : '.mp3';
 			const filter = songFormat === 'Video' ? 'video' : 'audioonly';
+			const folder = songFormat === 'Video' ? 'videos' : 'audios';
 
-			const videosDir = path.join(__dirname, '..', '..', 'public', 'videos');
-			const videoFile = path.join(videosDir, `${videoTitle}${format}`);
+			const saveDir = path.join(__dirname, '..', '..', '..', 'public', folder);
+			const videoFile = path.join(saveDir, `${videoTitle}${format}`);
 
-			if (!fs.existsSync(videosDir)) {
-				fs.mkdirSync(videosDir, { recursive: true });
+			if (!fs.existsSync(saveDir)) {
+				fs.mkdirSync(saveDir, { recursive: true });
 			}
 
 			await new Promise((resolve) => {
@@ -34,4 +35,4 @@ const downloadYoutubeRobot = {
 	},
 };
 
-export default downloadYoutubeRobot;
+export default youtubeDownloadRobot;

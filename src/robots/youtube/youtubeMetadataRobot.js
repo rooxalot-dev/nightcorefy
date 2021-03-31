@@ -1,4 +1,4 @@
-const metadataRobot = {
+const youtubeMetadataRobot = {
 	extractMetadata: async function (data) {
 		const stringMetadata = data.videoStringMetadata || '';
 
@@ -35,4 +35,4 @@ const metadataRobot = {
 	},
 };
 
-export default metadataRobot;
+export default youtubeMetadataRobot;

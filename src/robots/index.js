@@ -1,13 +1,13 @@
-import inputRobot from './inputRobot';
-import youtubeSongRobot from './youtubeSongRobot';
-import metadataRobot from './metadataRobot';
-import resultPickerRobot from './resultPickerRobot';
-import downloadYoutubeRobot from './downloadYoutubeRobot';
+import inputRobot from './generic/inputRobot';
+import youtubeSongSearchRobot from './youtube/youtubeSongSearchRobot';
+import youtubeMetadataRobot from './youtube/youtubeMetadataRobot';
+import youtubeResultPickerRobot from './youtube/youtubeResultPickerRobot';
+import youtubeDownloadRobot from './youtube/youtubeDownloadRobot';
 
 export default {
 	inputRobot,
-	youtubeSongRobot,
-	metadataRobot,
-	resultPickerRobot,
-	downloadYoutubeRobot,
+	youtubeSongSearchRobot,
+	youtubeMetadataRobot,
+	youtubeResultPickerRobot,
+	youtubeDownloadRobot,
 };
