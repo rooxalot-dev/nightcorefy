@@ -19,35 +19,57 @@ const mixAudioRobot = {
 	},
 	getPressetMix: function (data) {
 		const { songPressetMix } = data;
+		let complexFilterString = '';
 
 		switch (songPressetMix) {
 			case 'normal':
-				return [];
+				complexFilterString = complexFilterString.concat(
+					'[0]volume=0.8[output]'
+				);
+				break;
 			case 'slowed':
-				return ['asetrate=44100*0.9', 'atempo=1/0.95'];
+				complexFilterString = complexFilterString.concat(
+					'[0] [1] afir=dry=10:wet=10 [reverb];'
+				);
+				complexFilterString = complexFilterString.concat(
+					'[0] [reverb] amix=inputs=2:weights=2 1 [reverbered];'
+				);
+				complexFilterString = complexFilterString.concat(
+					'[reverbered] volume=0.8,asetrate=44100*0.9,atempo=1/0.95 [output]'
+				);
+				break;
 			case 'nightcore':
-				return ['asetrate=44100*1.30', 'atempo=1.07'];
+				complexFilterString = complexFilterString.concat(
+					'[0]volume=0.8,asetrate=44100*1.30,atempo=1.07[output]'
+				);
 			default:
 				break;
 		}
+
+		return [complexFilterString];
 	},
 	mixFile: async function (data) {
-		const { audiosPath } = pathUtils;
-		const { finalFileName, processedFilePath, songPressetMix } = data;
+		const { audiosPath, reverbAuxPath } = pathUtils;
+		const { rawFileName, rawFilePath, songPressetMix } = data;
 		const presetMixArray = this.getPressetMix(data);
+
+		console.log('presetMixArray', presetMixArray);
 
 		const pressetFinalFileName = path.join(
 			audiosPath,
-			finalFileName.replace('(Processed)', `(${songPressetMix})`)
+			rawFileName.replace('(RAW)', `(${songPressetMix})`)
 		);
 
 		console.log(
-			`File ${processedFilePath} will be processed with the ${songPressetMix} presset`
+			`File ${rawFilePath} will be processed with the ${songPressetMix} presset`
 		);
 
 		return await new Promise((resolve, reject) => {
-			ffmpeg(processedFilePath)
-				.audioFilters(presetMixArray)
+			ffmpeg(rawFilePath)
+				.input(reverbAuxPath)
+				.complexFilter(presetMixArray)
+				.map('output')
+				.withAudioCodec('libmp3lame')
 				.toFormat('mp3')
 				.save(pressetFinalFileName)
 				.on('error', (err) => {
