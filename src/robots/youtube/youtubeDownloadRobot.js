@@ -37,7 +37,8 @@ const youtubeDownloadRobot = {
 		};
 	},
 	getFileInfos: function (data) {
-		const { videoTitle } = data.pickedResult;
+		let { videoTitle } = data.pickedResult;
+		videoTitle = videoTitle.replace(/[^\w\s]/gi, '');
 		const {
 			formatExtension,
 			youtubeFilter,
@@ -65,38 +66,52 @@ const youtubeDownloadRobot = {
 	},
 	downloadYoutubeFile: async function (data) {
 		const { videoLink } = data.pickedResult;
-		const { youtubeFilter, youtubeVideoFile, finalFile } = this.getFileInfos(
-			data
-		);
+		const { youtubeFilter, youtubeVideoFile } = this.getFileInfos(data);
 
 		await new Promise((resolve, reject) => {
 			const youtubeLink = `https://www.youtube.com${videoLink}`;
 
 			ytdl(youtubeLink, { filter: youtubeFilter, quality: 'highest' }).pipe(
-				fs.createWriteStream(youtubeVideoFile).on('finish', () => {
-					ffmpeg(youtubeVideoFile)
-						.withAudioCodec('libmp3lame')
-						.toFormat(data.formatExtension.replace('.', ''))
-						.save(finalFile)
-						.on('error', (err) => {
-							console.log(
-								`An error ocurred while formating the file: ${err.message}`
-							);
-							reject(err.message);
-						})
-						.on('progress', (progress) => {
-							console.log(
-								`Processing the file: ${progress.targetSize} KB converted`
-							);
-						})
-						.on('end', () => {
-							console.log('Processing finished!');
-
-							data.processedFilePath = finalFile;
-							resolve(data);
-						});
-				})
+				fs
+					.createWriteStream(youtubeVideoFile)
+					.on('error', (err) => {
+						console.log(
+							`An error ocurred while saving the file: ${err.message}`
+						);
+						reject(err.message);
+					})
+					.on('finish', () => {
+						console.log('Youtube download finished');
+						resolve(data);
+					})
 			);
+		});
+	},
+	convertToAudioToMp3: async function (data) {
+		const { youtubeVideoFile, finalFile } = this.getFileInfos(data);
+
+		return await new Promise((resolve, reject) => {
+			ffmpeg(youtubeVideoFile)
+				.withAudioCodec('libmp3lame')
+				.toFormat(data.formatExtension.replace('.', ''))
+				.save(finalFile)
+				.on('error', (err) => {
+					console.log(
+						`An error ocurred while formating the file: ${err.message}`
+					);
+					reject(err.message);
+				})
+				.on('progress', (progress) => {
+					console.log(
+						`Processing the file: ${progress.targetSize} KB converted`
+					);
+				})
+				.on('end', () => {
+					console.log('Processing finished!');
+
+					data.processedFilePath = finalFile;
+					resolve(data);
+				});
 		});
 	},
 
@@ -104,6 +119,10 @@ const youtubeDownloadRobot = {
 		if (data.pickedResult) {
 			this.getFormatInput(data);
 			await this.downloadYoutubeFile(data);
+
+			if (data.songFormat !== 'audio') return;
+
+			await this.convertToAudioToMp3(data);
 		} else {
 			console.log(`There's no result to download!`);
 		}
