@@ -47,7 +47,10 @@ const youtubeDownloadRobot = {
 
 		// Defines the file name before being processed and the final file name
 		const youtubeFileName = `${videoTitle} (Youtube)${formatExtension}`;
-		const finalFileName = `${videoTitle}${formatExtension}`;
+		const finalFileName = `${videoTitle} (Processed)${formatExtension}`;
+
+		data.youtubeFileName = youtubeFileName;
+		data.finalFileName = finalFileName;
 
 		const saveDir = folder;
 		const youtubeVideoFile = path.join(saveDir, youtubeFileName);

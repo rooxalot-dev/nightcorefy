@@ -10,6 +10,7 @@ async function orchestrate({ appName, clearState }) {
 		robots.youtubeMetadataRobot,
 		robots.youtubeResultPickerRobot,
 		robots.youtubeDownloadRobot,
+		robots.mixAudioRobot,
 	];
 
 	try {
@@ -34,4 +35,4 @@ async function orchestrate({ appName, clearState }) {
 	}
 }
 
-orchestrate({ appName: 'YouTwoBe', clearState: true });
+orchestrate({ appName: 'YouTwoBe', clearState: false });
