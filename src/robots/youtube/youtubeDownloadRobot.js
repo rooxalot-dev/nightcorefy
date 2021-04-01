@@ -45,16 +45,12 @@ const youtubeDownloadRobot = {
 			folder,
 		} = this.getConfigurationByFormat(data);
 
-		// Defines the file name before being processed and the final file name
-		const youtubeFileName = `${videoTitle} (Youtube)${formatExtension}`;
-		const finalFileName = `${videoTitle} (Processed)${formatExtension}`;
-
-		data.youtubeFileName = youtubeFileName;
-		data.finalFileName = finalFileName;
+		// Defines the file name before being processed
+		const rawFileName = `${videoTitle} (RAW)${formatExtension}`;
+		data.rawFileName = rawFileName;
 
 		const saveDir = folder;
-		const youtubeVideoFile = path.join(saveDir, youtubeFileName);
-		const finalFile = path.join(saveDir, finalFileName);
+		const rawFilePath = path.join(saveDir, rawFileName);
 
 		// Creates the directory in case it doesn't exist
 		if (!fs.existsSync(saveDir)) {
@@ -63,20 +59,20 @@ const youtubeDownloadRobot = {
 
 		return {
 			youtubeFilter,
-			youtubeVideoFile,
-			finalFile,
+			rawFileName,
+			rawFilePath,
 		};
 	},
 	downloadYoutubeFile: async function (data) {
 		const { videoLink } = data.pickedResult;
-		const { youtubeFilter, youtubeVideoFile } = this.getFileInfos(data);
+		const { youtubeFilter, rawFileName, rawFilePath } = this.getFileInfos(data);
 
 		await new Promise((resolve, reject) => {
 			const youtubeLink = `https://www.youtube.com${videoLink}`;
 
 			ytdl(youtubeLink, { filter: youtubeFilter, quality: 'highest' }).pipe(
 				fs
-					.createWriteStream(youtubeVideoFile)
+					.createWriteStream(rawFilePath)
 					.on('error', (err) => {
 						console.log(
 							`An error ocurred while saving the file: ${err.message}`
@@ -85,36 +81,11 @@ const youtubeDownloadRobot = {
 					})
 					.on('finish', () => {
 						console.log('Youtube download finished');
+						data.rawFileName = rawFileName;
+						data.rawFilePath = rawFilePath;
 						resolve(data);
 					})
 			);
-		});
-	},
-	convertToAudioToMp3: async function (data) {
-		const { youtubeVideoFile, finalFile } = this.getFileInfos(data);
-
-		return await new Promise((resolve, reject) => {
-			ffmpeg(youtubeVideoFile)
-				.withAudioCodec('libmp3lame')
-				.toFormat(data.formatExtension.replace('.', ''))
-				.save(finalFile)
-				.on('error', (err) => {
-					console.log(
-						`An error ocurred while formating the file: ${err.message}`
-					);
-					reject(err.message);
-				})
-				.on('progress', (progress) => {
-					console.log(
-						`Processing the file: ${progress.targetSize} KB converted`
-					);
-				})
-				.on('end', () => {
-					console.log('Processing finished!');
-
-					data.processedFilePath = finalFile;
-					resolve(data);
-				});
 		});
 	},
 
@@ -122,10 +93,6 @@ const youtubeDownloadRobot = {
 		if (data.pickedResult) {
 			this.getFormatInput(data);
 			await this.downloadYoutubeFile(data);
-
-			if (data.songFormat !== 'audio') return;
-
-			await this.convertToAudioToMp3(data);
 		} else {
 			console.log(`There's no result to download!`);
 		}
