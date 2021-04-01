@@ -20,18 +20,26 @@ const mixAudioRobot = {
 	getPressetMix: function (data) {
 		const { songPressetMix } = data;
 
+		let pressetComplexFilterData = [];
+
 		switch (songPressetMix) {
 			case 'normal':
-				return [];
+				pressetComplexFilterData = ['[0]volume=1[output]'];
+				break;
 			case 'slowed':
-				return ['asetrate=44100*0.9', 'atempo=1/0.95', 'aecho=0.8:0.88:20:0.8'];
-			case 'alien':
-				return ['asetrate=44100*0.9', 'atempo=1/0.95', 'aecho=1:0.8:50:1'];
+				pressetComplexFilterData = [
+					'[0] [1] afir=dry=10:wet=10 [reverb]; [0] [reverb] amix=inputs=2:weights=2 1[reverbered]; [reverbered]asetrate=44100*0.9,atempo=1/0.95[output]',
+				];
+				break;
 			case 'nightcore':
-				return ['asetrate=44100*1.30', 'atempo=1.07'];
+				pressetComplexFilterData = [
+					'[0]asetrate=44100*1.30,atempo=1.07[output]',
+				];
 			default:
 				break;
 		}
+
+		return pressetComplexFilterData;
 	},
 	mixFile: async function (data) {
 		const { audiosPath, reverbAuxPath } = pathUtils;
@@ -50,23 +58,9 @@ const mixAudioRobot = {
 		return await new Promise((resolve, reject) => {
 			ffmpeg(processedFilePath)
 				.input(reverbAuxPath)
-				.audioFilters(presetMixArray)
-				.complexFilter([
-					{
-						filter: 'afir',
-						options: { dry: '10', wet: '10' },
-						inputs: ['0', '1'],
-						outputs: 'reverb',
-					},
-					{
-						filter: 'amix',
-						options: { inputs: '2', weights: '2 1' },
-						inputs: ['0', 'reverb'],
-						outputs: 'output',
-					},
-				])
-				.output(pressetFinalFileName)
+				.complexFilter(presetMixArray)
 				.map('output')
+				.withAudioCodec('libmp3lame')
 				.toFormat('mp3')
 				.save(pressetFinalFileName)
 				.on('error', (err) => {

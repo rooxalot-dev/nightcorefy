@@ -5,11 +5,11 @@ async function orchestrate({ appName, clearState }) {
 	let data = {};
 
 	const appRobots = [
-		// robots.inputRobot,
-		// robots.youtubeSongSearchRobot,
-		// robots.youtubeMetadataRobot,
-		// robots.youtubeResultPickerRobot,
-		// robots.youtubeDownloadRobot,
+		robots.inputRobot,
+		robots.youtubeSongSearchRobot,
+		robots.youtubeMetadataRobot,
+		robots.youtubeResultPickerRobot,
+		robots.youtubeDownloadRobot,
 		robots.mixAudioRobot,
 	];
 
