@@ -31,13 +31,18 @@ const youtubeSongSearchRobots = {
 
 			return Array.from(searchResults).map((element) => {
 				const metadataElement = element.querySelector('#meta #video-title');
+				const timeSpanElement = element.querySelector(
+					'span.ytd-thumbnail-overlay-time-status-renderer'
+				);
 
 				const videoTitle = metadataElement.getAttribute('title');
 				const videoLink = metadataElement.getAttribute('href');
 				const videoStringMetadata = metadataElement.getAttribute('aria-label');
+				const videoTime = timeSpanElement.innerText;
 
 				return {
 					videoTitle,
+					videoTime,
 					videoLink,
 					videoStringMetadata,
 				};

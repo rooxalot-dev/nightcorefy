@@ -11,7 +11,11 @@ const youtubeResultPickerRobot = {
 
 	pickResult: async function (data) {
 		const results = data.searchResults.map((result) => {
-			return `Title: ${result.videoTitle} | views: ${result.viewsCount}`;
+			return `Title: ${
+				result.videoTitle
+			} | time: ${result.videoTime.trim().replace('/n', '')} | views: ${
+				result.viewsCount
+			}`;
 		});
 
 		const index = keyInSelect(results, 'Pick the result you want to use: ');
