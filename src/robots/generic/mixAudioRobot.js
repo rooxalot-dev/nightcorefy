@@ -53,8 +53,6 @@ const mixAudioRobot = {
 		const { rawFileName, rawFilePath, songPressetMix } = data;
 		const presetMixArray = this.getPressetMix(data);
 
-		console.log('presetMixArray', presetMixArray);
-
 		const pressetFinalFileName = path.join(
 			audiosPath,
 			rawFileName.replace('(RAW)', `(${songPressetMix})`)
@@ -85,6 +83,7 @@ const mixAudioRobot = {
 				})
 				.on('end', () => {
 					data.mixedFileName = pressetFinalFileName;
+					console.log('File processed: ', pressetFinalFileName);
 					resolve(data);
 				});
 		});
