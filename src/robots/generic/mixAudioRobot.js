@@ -24,7 +24,9 @@ const mixAudioRobot = {
 			case 'normal':
 				return [];
 			case 'slowed':
-				return ['asetrate=44100*0.9', 'atempo=1/0.95'];
+				return ['asetrate=44100*0.9', 'atempo=1/0.95', 'aecho=0.8:0.88:20:0.8'];
+			case 'alien':
+				return ['asetrate=44100*0.9', 'atempo=1/0.95', 'aecho=1:0.8:50:1'];
 			case 'nightcore':
 				return ['asetrate=44100*1.30', 'atempo=1.07'];
 			default:
@@ -32,7 +34,7 @@ const mixAudioRobot = {
 		}
 	},
 	mixFile: async function (data) {
-		const { audiosPath } = pathUtils;
+		const { audiosPath, reverbAuxPath } = pathUtils;
 		const { finalFileName, processedFilePath, songPressetMix } = data;
 		const presetMixArray = this.getPressetMix(data);
 
@@ -47,7 +49,24 @@ const mixAudioRobot = {
 
 		return await new Promise((resolve, reject) => {
 			ffmpeg(processedFilePath)
+				.input(reverbAuxPath)
 				.audioFilters(presetMixArray)
+				.complexFilter([
+					{
+						filter: 'afir',
+						options: { dry: '10', wet: '10' },
+						inputs: ['0', '1'],
+						outputs: 'reverb',
+					},
+					{
+						filter: 'amix',
+						options: { inputs: '2', weights: '2 1' },
+						inputs: ['0', 'reverb'],
+						outputs: 'output',
+					},
+				])
+				.output(pressetFinalFileName)
+				.map('output')
 				.toFormat('mp3')
 				.save(pressetFinalFileName)
 				.on('error', (err) => {
