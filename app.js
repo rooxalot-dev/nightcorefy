@@ -11,7 +11,7 @@ async function orchestrate({ appName, clearState }) {
 		robots.youtubeResultPickerRobot,
 		robots.youtubeDownloadRobot,
 		robots.mixAudioRobot,
-		//robots.imageRobot,
+		robots.pinterestImageRobot,
 	];
 
 	if (clearState) {
@@ -37,4 +37,4 @@ async function orchestrate({ appName, clearState }) {
 	}
 }
 
-orchestrate({ appName: 'YouTwoBe', clearState: true });
+orchestrate({ appName: 'YouTwoBe', clearState: false });
