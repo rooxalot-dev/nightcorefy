@@ -4,6 +4,7 @@ import youtubeMetadataRobot from './youtube/youtubeMetadataRobot';
 import youtubeResultPickerRobot from './youtube/youtubeResultPickerRobot';
 import youtubeDownloadRobot from './youtube/youtubeDownloadRobot';
 import mixAudioRobot from './generic/mixAudioRobot';
+import imageRobot from './generic/imageRobot';
 
 export default {
 	inputRobot,
@@ -12,4 +13,5 @@ export default {
 	youtubeResultPickerRobot,
 	youtubeDownloadRobot,
 	mixAudioRobot,
+	imageRobot,
 };

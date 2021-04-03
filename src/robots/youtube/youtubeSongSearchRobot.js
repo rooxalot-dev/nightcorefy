@@ -38,7 +38,11 @@ const youtubeSongSearchRobots = {
 				const videoTitle = metadataElement.getAttribute('title');
 				const videoLink = metadataElement.getAttribute('href');
 				const videoStringMetadata = metadataElement.getAttribute('aria-label');
-				const videoTime = timeSpanElement.innerText;
+
+				let videoTime = '?';
+				if (timeSpanElement) {
+					videoTime = timeSpanElement.innerText;
+				}
 
 				return {
 					videoTitle,

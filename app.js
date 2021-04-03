@@ -11,7 +11,12 @@ async function orchestrate({ appName, clearState }) {
 		robots.youtubeResultPickerRobot,
 		robots.youtubeDownloadRobot,
 		robots.mixAudioRobot,
+		//robots.imageRobot,
 	];
+
+	if (clearState) {
+		stateManager.clear();
+	}
 
 	try {
 		console.log(`Welcome to ${appName}!`);
@@ -28,9 +33,6 @@ async function orchestrate({ appName, clearState }) {
 	} catch (error) {
 		console.log('Error: ', error);
 	} finally {
-		if (clearState) {
-			stateManager.clear();
-		}
 		process.exit();
 	}
 }

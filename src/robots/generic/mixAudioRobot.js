@@ -90,8 +90,12 @@ const mixAudioRobot = {
 	},
 
 	run: async function (data) {
-		this.askMixPresset(data);
-		await this.mixFile(data);
+		const { songFormat } = data;
+
+		if (songFormat === 'audio') {
+			this.askMixPresset(data);
+			await this.mixFile(data);
+		}
 	},
 };
 
